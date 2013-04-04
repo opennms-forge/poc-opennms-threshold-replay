@@ -58,18 +58,18 @@ public class ThresholdReplayerTest {
         thresholdType = "high";
 //        thresholdType = "absoluteChange";
 //        thresholdType = "relativeChange";
-        thresholdValue = 600.0;
-        thresholdRearm = 300.0;
+        thresholdValue = 1000.0;
+        thresholdRearm = 000.0;
         thresholdTrigger = 1;
         rrdBasePath = "/opt/opennms/share/rrd/snmp/";
         outPath = "/tmp/tr/out/";
 
-        File[] nodeIdFolders = new File(rrdBasePath).listFiles();
-        for (File nodeIdFolder : nodeIdFolders) {
-            if (nodeIdFolder.isDirectory()) {
-                nodeIds.add(nodeIdFolder.getName());
-            }
-        }
+//        File[] nodeIdFolders = new File(rrdBasePath).listFiles();
+//        for (File nodeIdFolder : nodeIdFolders) {
+//            if (nodeIdFolder.isDirectory()) {
+//                nodeIds.add(nodeIdFolder.getName());
+//            }
+//        }
 
         for (String nodeId : nodeIds) {
 

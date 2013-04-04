@@ -42,10 +42,8 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.threshd.ThresholdConfigWrapper;
-import org.opennms.netmgt.threshd.ThresholdEvaluatorAbsoluteChange;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorAbsoluteChange.ThresholdEvaluatorStateAbsoluteChange;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorHighLow.ThresholdEvaluatorStateHighLow;
-import org.opennms.netmgt.threshd.ThresholdEvaluatorRelativeChange;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorRelativeChange.ThresholdEvaluatorStateRelativeChange;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
@@ -92,8 +90,8 @@ public class ThresholdReplayer {
     }
 
     private void generateOverlayGraphCommand() {
-        overlayGraphCommand = "--start=" + startTimestamp + " --end=" + endTimestamp + 
-                " --title=\"Metric/Overlay=" + rrdName + " NodeId=" + nodeId  
+        overlayGraphCommand = "--start=" + startTimestamp + " --end=" + endTimestamp
+                + " --title=\"Metric/Overlay=" + rrdName + " NodeId=" + nodeId
                 + " Th-Type=" + thresholdType + " Th-Value=" + thresholdValue + " Th-Rearm=" + thresholdRearm + " Th-Trigger=" + thresholdTrigger + "\" "
                 + "--width=1200 --height=600 "
                 + "--vertical-label=\"Metric\" "
@@ -122,12 +120,12 @@ public class ThresholdReplayer {
             System.out.println("Next :: runRrdOverlayToThresholder");
             runRrdOverlayToThresholder();
 
-            if(true) {
+            if (true) {
                 if (jrbOverlay.canWrite()) {
                     jrbOverlay.delete();
                 }
             }
-            
+
             System.out.println("Next :: createMiniOverlayRrdFile");
             createMiniOverlayRrdFile();
 
@@ -140,11 +138,11 @@ public class ThresholdReplayer {
             System.out.println("Next :: storeGraphPNG");
             File overlayGraphPNG = new File(jrbOverlay.getAbsolutePath().replace(rrdFileEnding, ".png"));
             storeGraphPNG(overlayGraphPNG, overlayGraphCommand, jrbOverlay);
-            
+
 //            if(false) {
 //                jrbOverlay.delete();
 //            }
-            
+
             System.out.println("DONE :: Thanks for computing with OpenNMS!");
         } else {
             System.out.println("No rrdOverlay possible, ignorring :: " + jrb.getAbsolutePath());
@@ -163,10 +161,10 @@ public class ThresholdReplayer {
         threshold.setTrigger(thresholdTrigger);
         ThresholdConfigWrapper wrapper = new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorState item = null;
-
+        
         if (thresholdType.equals("high") || thresholdType.equals("low")) {
             item = new ThresholdEvaluatorStateHighLow(wrapper);
-        }
+        } else 
 
         if (thresholdType.equals("absoluteChange")) {
             item = new ThresholdEvaluatorStateAbsoluteChange(wrapper);
@@ -177,25 +175,32 @@ public class ThresholdReplayer {
         }
 
         Status status;
-        Boolean isExeeded = false;
-        while (rrdOverlay.hasNextStep()) {
-            status = item.evaluate(rrdOverlay.getValue());
-            if (status.equals(Status.TRIGGERED)) {
-                isExeeded = true;
-                System.out.println("Threshold TRIGGERED at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue());
-            }
-            if (status.equals(Status.RE_ARMED)) {
-                isExeeded = false;
-                System.out.println("Threshold RE_ARMED  at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue());
-            }
+        if (item != null) {
+            Boolean isExeeded = false;
+            while (rrdOverlay.hasNextStep()) {
+                status = item.evaluate(rrdOverlay.getValue());
+                if (status.equals(Status.TRIGGERED)) {
+                    isExeeded = true;
+                    System.out.println("Threshold TRIGGERED at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue());
+                }
+                if (status.equals(Status.RE_ARMED)) {
+                    isExeeded = false;
+                    System.out.println("Threshold RE_ARMED  at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue());
+                }
 
-            if (isExeeded) {
-                overlayMap.put(rrdOverlay.getTimeStamp(), rrdOverlay.getValue());
-            } else {
-                overlayMap.put(rrdOverlay.getTimeStamp(), Double.NaN);
+                if (isExeeded) {
+                    overlayMap.put(rrdOverlay.getTimeStamp(), rrdOverlay.getValue());
+                } else {
+                    overlayMap.put(rrdOverlay.getTimeStamp(), Double.NaN);
+                }
+                /**
+                 * Fake re_arms for absoluteChange and relativeChange to make every exeeded visible.
+                 */
+                if (thresholdType.equals("absoluteChange") || thresholdType.equals("relativeChange")) {
+                    isExeeded = false;
+                }
+                rrdOverlay.nextStep();
             }
-
-            rrdOverlay.nextStep();
         }
     }
 
