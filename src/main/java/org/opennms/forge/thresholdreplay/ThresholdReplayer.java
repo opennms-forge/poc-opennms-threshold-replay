@@ -32,11 +32,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
+import org.joda.time.format.PeriodPrinter;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
@@ -71,6 +77,7 @@ public class ThresholdReplayer {
     private Map<Long, Double> overlayMap = new LinkedHashMap<Long, Double>();
     private String overlayGraphCommand = "";
     private DateTimeFormatter fmt = DateTimeFormat.forPattern("YYYY-MM-dd");
+    private List<ThresholdOccur> thresholdOccurs = new LinkedList<ThresholdOccur>();
 
     public ThresholdReplayer(String startDate, String endDate, Integer desiredResolution, String rrdName, String nodeId, String thresholdType, double thresholdValue, double thresholdRearm, int thresholdTrigger, String rrdBasePath, String outPath) {
         this.startDate = startDate;
@@ -141,6 +148,7 @@ public class ThresholdReplayer {
             File overlayGraphPNG = new File(jrbOverlay.getAbsolutePath().replace(rrdFileEnding, ".png"));
             storeGraphPNG(overlayGraphPNG, overlayGraphCommand, jrbOverlay);
 
+            printReport();
 //            if(false) {
 //                jrbOverlay.delete();
 //            }
@@ -163,12 +171,10 @@ public class ThresholdReplayer {
         threshold.setTrigger(thresholdTrigger);
         ThresholdConfigWrapper wrapper = new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorState item = null;
-        
+
         if (thresholdType.equals("high") || thresholdType.equals("low")) {
             item = new ThresholdEvaluatorStateHighLow(wrapper);
-        } else 
-
-        if (thresholdType.equals("absoluteChange")) {
+        } else if (thresholdType.equals("absoluteChange")) {
             item = new ThresholdEvaluatorStateAbsoluteChange(wrapper);
         }
 
@@ -178,16 +184,20 @@ public class ThresholdReplayer {
 
         Status status;
         if (item != null) {
+            ThresholdOccur thresholdOccur = null;
             Boolean isExeeded = false;
             while (rrdOverlay.hasNextStep()) {
                 status = item.evaluate(rrdOverlay.getValue());
                 if (status.equals(Status.TRIGGERED)) {
                     isExeeded = true;
+                    thresholdOccur = new ThresholdOccur(new Instant(rrdOverlay.getTimeStamp()), null);
                     System.out.println("Threshold TRIGGERED at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue());
                 }
                 if (status.equals(Status.RE_ARMED)) {
                     isExeeded = false;
-                    System.out.println("Threshold RE_ARMED  at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue());
+                    thresholdOccur.setRearmed(new Instant(rrdOverlay.getTimeStamp()));
+                    thresholdOccurs.add(thresholdOccur);
+                    System.out.println("Threshold RE_ARMED  at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue() + " after " + thresholdOccur.getDuration().getMillis() + "ms.");
                 }
 
                 if (isExeeded) {
@@ -196,7 +206,8 @@ public class ThresholdReplayer {
                     overlayMap.put(rrdOverlay.getTimeStamp(), Double.NaN);
                 }
                 /**
-                 * Fake re_arms for absoluteChange and relativeChange to make every exeeded visible.
+                 * Fake re_arms for absoluteChange and relativeChange to make
+                 * every exeeded visible.
                  */
                 if (thresholdType.equals("absoluteChange") || thresholdType.equals("relativeChange")) {
                     isExeeded = false;
@@ -262,5 +273,28 @@ public class ThresholdReplayer {
         } catch (Exception ex) {
             System.out.println("createMiniOverlayRrdFile :: " + ex.getMessage());
         }
+    }
+
+    private void printReport() {
+        Duration totalDuration = new Duration(0);
+        for (ThresholdOccur thresholdOccur : thresholdOccurs) {
+            totalDuration = totalDuration.plus(thresholdOccur.getDuration());
+        }
+
+        System.out.println("Node " + nodeId + " had " + thresholdOccurs.size() + " threshold occurences with an over all duration of " + getPeriodFormatter().print(totalDuration.toPeriod()) + ".");
+    }
+
+    private PeriodFormatter getPeriodFormatter() {
+        PeriodFormatter daysHoursMinutes = new PeriodFormatterBuilder()
+                .appendDays()
+                .appendSuffix(" day", " days")
+                .appendSeparator(" and ")
+                .appendMinutes()
+                .appendSuffix(" minute", " minutes")
+                .appendSeparator(" and ")
+                .appendSeconds()
+                .appendSuffix(" second", " seconds")
+                .toFormatter();
+        return daysHoursMinutes;
     }
 }

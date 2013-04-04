@@ -61,7 +61,7 @@ public class ThresholdReplayerTest {
 //        thresholdType = "absoluteChange";
 //        thresholdType = "relativeChange";
         thresholdValue = 1000.0;
-        thresholdRearm = 000.0;
+        thresholdRearm = 800.0;
         thresholdTrigger = 1;
         rrdBasePath = "/opt/opennms/share/rrd/snmp/";
         outPath = "/tmp/tr/out/";
