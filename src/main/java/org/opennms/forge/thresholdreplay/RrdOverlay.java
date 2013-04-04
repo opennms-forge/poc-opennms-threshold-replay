@@ -3,13 +3,14 @@ package org.opennms.forge.thresholdreplay;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jrobin.core.FetchData;
 import org.jrobin.core.RrdDb;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RrdOverlay {
 
+    private static Logger logger = LoggerFactory.getLogger(ThresholdReplayer.class);
     private RrdDb rrdDb;
     private long[] timestamps;
     private double[] values;
@@ -31,9 +32,9 @@ public class RrdOverlay {
                 hasWorked = false; 
             }
         } catch (IOException ex) {
-            Logger.getLogger(ThresholdReplayer.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Sorry", ex);
         } catch (org.jrobin.core.RrdException ex) {
-            Logger.getLogger(ThresholdReplayer.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Sorry", ex);
         }
         return hasWorked;
     }

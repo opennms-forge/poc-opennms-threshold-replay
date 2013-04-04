@@ -42,7 +42,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
-import org.joda.time.format.PeriodPrinter;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
@@ -119,14 +118,13 @@ public class ThresholdReplayer {
     }
 
     public void generateThresholdOverlayPNG() {
-        logger.error("test");
         startTimestamp = generateTimestamp(startDate);
         endTimestamp = generateTimestamp(endDate);
 
-        System.out.println("Next :: generateRrdOverlay");
+        logger.debug("Next :: generateRrdOverlay");
         if (generateRrdOverlay()) {
 
-            System.out.println("Next :: runRrdOverlayToThresholder");
+            logger.debug("Next :: runRrdOverlayToThresholder");
             runRrdOverlayToThresholder();
 
             if (true) {
@@ -135,16 +133,16 @@ public class ThresholdReplayer {
                 }
             }
 
-            System.out.println("Next :: createMiniOverlayRrdFile");
+            logger.debug("Next :: createMiniOverlayRrdFile");
             createMiniOverlayRrdFile();
 
-            System.out.println("Next :: editOverlayRrdFile");
+            logger.debug("Next :: editOverlayRrdFile");
             editOverlayRrdFile();
 
-            System.out.println("Next :: generateOverlayGraphCommand");
+            logger.debug("Next :: generateOverlayGraphCommand");
             generateOverlayGraphCommand();
 
-            System.out.println("Next :: storeGraphPNG");
+            logger.debug("Next :: storeGraphPNG");
             File overlayGraphPNG = new File(jrbOverlay.getAbsolutePath().replace(rrdFileEnding, ".png"));
             storeGraphPNG(overlayGraphPNG, overlayGraphCommand, jrbOverlay);
 
@@ -153,9 +151,9 @@ public class ThresholdReplayer {
 //                jrbOverlay.delete();
 //            }
 
-            System.out.println("DONE :: Thanks for computing with OpenNMS!");
+            logger.debug("DONE :: Thanks for computing with OpenNMS!");
         } else {
-            System.out.println("No rrdOverlay possible, ignorring :: " + jrb.getAbsolutePath());
+            logger.debug("No rrdOverlay possible, ignorring :: " + jrb.getAbsolutePath());
         }
 //        File initialGraphPNG = new File(outPath + nodeId + "_" + rrdName + ".png");
 //        storeGraphPNG(initialGraphPNG, initialGraphCommand, jrb);
@@ -191,13 +189,13 @@ public class ThresholdReplayer {
                 if (status.equals(Status.TRIGGERED)) {
                     isExeeded = true;
                     thresholdOccur = new ThresholdOccur(new Instant(rrdOverlay.getTimeStamp()), null);
-                    System.out.println("Threshold TRIGGERED at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue());
+                    logger.debug("Threshold TRIGGERED at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue());
                 }
                 if (status.equals(Status.RE_ARMED)) {
                     isExeeded = false;
                     thresholdOccur.setRearmed(new Instant(rrdOverlay.getTimeStamp()));
                     thresholdOccurs.add(thresholdOccur);
-                    System.out.println("Threshold RE_ARMED  at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue() + " after " + thresholdOccur.getDuration().getMillis() + "ms.");
+                    logger.debug("Threshold RE_ARMED  at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue() + " after " + thresholdOccur.getDuration().getMillis() + "ms.");
                 }
 
                 if (isExeeded) {
@@ -209,8 +207,9 @@ public class ThresholdReplayer {
                  * Fake re_arms for absoluteChange and relativeChange to make
                  * every exeeded visible.
                  */
-                if (thresholdType.equals("absoluteChange") || thresholdType.equals("relativeChange")) {
+                if (isExeeded && (thresholdType.equals("absoluteChange") || thresholdType.equals("relativeChange")) ) {
                     isExeeded = false;
+                    thresholdOccurs.add(thresholdOccur);
                 }
                 rrdOverlay.nextStep();
             }
@@ -222,8 +221,8 @@ public class ThresholdReplayer {
     }
 
     private void storeGraphPNG(File graphPNG, String graphCommand, File jrbFile) {
-        System.out.println("graphPNG :: " + graphPNG.getAbsolutePath());
-        System.out.println("jrbFile  :: " + jrbFile.getAbsolutePath());
+        logger.debug("graphPNG :: " + graphPNG.getAbsolutePath());
+        logger.debug("jrbFile  :: " + jrbFile.getAbsolutePath());
 
         InputStream createGraph = null;
         try {
@@ -240,12 +239,12 @@ public class ThresholdReplayer {
             out.flush();
             out.close();
         } catch (Exception ex) {
-            System.out.println("storeGraphPNG :: " + ex.getMessage());
+            logger.error("storeGraphPNG :: " + ex.getMessage());
         } finally {
             try {
                 createGraph.close();
             } catch (IOException ex) {
-                System.out.println("storeGraphPNG finally :: " + ex.getMessage());
+                logger.error("storeGraphPNG finally :: " + ex.getMessage());
             }
         }
     }
@@ -255,7 +254,7 @@ public class ThresholdReplayer {
             try {
                 RrdUtils.updateRRD("Threshold-Replay", jrbOverlay.getParent(), nodeId + "_" + rrdName + "_Overlay", timestamp * 1000, overlayMap.get(timestamp).toString());
             } catch (RrdException ex) {
-                System.out.println("RrdUtils.updateRRD :: " + ex.getMessage());
+                logger.error("RrdUtils.updateRRD :: " + ex.getMessage());
             }
         }
     }
@@ -271,7 +270,7 @@ public class ThresholdReplayer {
             jrbOverlay.getParentFile().mkdirs();
             RrdUtils.createRRD("Threshold-Replay", jrbOverlay.getParent(), nodeId + "_" + rrdName + "_Overlay", rrdOverlay.getStepSize().intValue(), rrdDataSourcesList, rraList);
         } catch (Exception ex) {
-            System.out.println("createMiniOverlayRrdFile :: " + ex.getMessage());
+            logger.error("createMiniOverlayRrdFile :: " + ex.getMessage());
         }
     }
 
@@ -281,7 +280,7 @@ public class ThresholdReplayer {
             totalDuration = totalDuration.plus(thresholdOccur.getDuration());
         }
 
-        System.out.println("Node " + nodeId + " had " + thresholdOccurs.size() + " threshold occurences with an over all duration of " + getPeriodFormatter().print(totalDuration.toPeriod()) + ".");
+        logger.debug("Node " + nodeId + " had " + thresholdOccurs.size() + " threshold occurences with an over all duration of " + getPeriodFormatter().print(totalDuration.toPeriod()) + ".");
     }
 
     private PeriodFormatter getPeriodFormatter() {

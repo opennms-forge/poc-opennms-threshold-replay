@@ -32,7 +32,10 @@ public class ThresholdOccur {
     }
 
     public Duration getDuration() {
-        Duration duration = new Duration(exeeded, rearmed);
+        Duration duration = new Duration(0);
+        if (rearmed != null) { 
+            duration = new Duration(exeeded, rearmed);
+        }
         return duration;
     }
 
