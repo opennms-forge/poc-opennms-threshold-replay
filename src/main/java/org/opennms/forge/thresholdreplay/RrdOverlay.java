@@ -16,17 +16,17 @@ public class RrdOverlay {
     private Integer stepIndex = 0;
     private Long stepSize;
         
-    public boolean initRrdMeasurmentOverlay(File jrb, String dsName, long startTimestamp, long endTimestamp) {
+    public boolean initRrdMeasurmentOverlay(File jrb, String dsName, long startTimestamp, long endTimestamp, Integer desiredResolution) {
         boolean hasWorked = false;
         try {
             if (jrb.exists() && jrb.canRead()) {
             rrdDb = new RrdDb(jrb.getAbsoluteFile(), true);
-            FetchData fetchData = rrdDb.createFetchRequest("AVERAGE", startTimestamp, endTimestamp).fetchData();
+            FetchData fetchData = rrdDb.createFetchRequest("AVERAGE", startTimestamp, endTimestamp, desiredResolution).fetchData();
             timestamps = fetchData.getTimestamps();
             values = fetchData.getValues(dsName);
             hasWorked = true;
             
-            stepSize = timestamps[1] - timestamps[0];
+            stepSize = desiredResolution.longValue();
             } else {
                 hasWorked = false; 
             }

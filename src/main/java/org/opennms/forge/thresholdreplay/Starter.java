@@ -45,6 +45,9 @@ public class Starter {
     @Option(name = "--endDate", aliases = {"-ed"}, required = true, usage = "YYYY-MM-dd")
     private static String endDate = "";
     
+    @Option(name = "--resolution", aliases = { "-res"}, required = false, usage = "300 (desired step size)")
+    private static Integer desiredResolution = 300;
+    
     @Option(name = "--rrdName", aliases = {"-rrd"}, required = true, usage = "SysRawInterrupts")
     private static String rrdName = "";
 
@@ -92,7 +95,7 @@ public class Starter {
 
         logger.info("OpenNMS Threshold Replay");
 
-        ThresholdReplayer tr = new ThresholdReplayer(startDate, endDate, rrdName, nodeId, thresholdType, thresholdValue, thresholdRearm, thresholdTrigger, rrdBasePath, outPath);
+        ThresholdReplayer tr = new ThresholdReplayer(startDate, endDate, desiredResolution, rrdName, nodeId, thresholdType, thresholdValue, thresholdRearm, thresholdTrigger, rrdBasePath, outPath);
         tr.generateThresholdOverlayPNG();
         
         logger.info("Thanks for computing with OpenNMS!");

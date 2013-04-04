@@ -16,9 +16,10 @@ import static org.junit.Assert.*;
  */
 public class ThresholdReplayerTest {
 
-    ThresholdReplayer thresholdReplayer;
+    private ThresholdReplayer thresholdReplayer;
     private String startDate;
     private String endDate;
+    private Integer desiredResolution;
     private String rrdName;
     private String nodeId;
     private String rrdBasePath;
@@ -54,6 +55,7 @@ public class ThresholdReplayerTest {
         nodeIds.add("1");
         startDate = "2013-04-01";
         endDate = "2013-04-02";
+        desiredResolution = 300;
         rrdName = "SysInterrupts";
         thresholdType = "high";
 //        thresholdType = "absoluteChange";
@@ -73,7 +75,7 @@ public class ThresholdReplayerTest {
 
         for (String nodeId : nodeIds) {
 
-            thresholdReplayer = new ThresholdReplayer(startDate, endDate, rrdName,
+            thresholdReplayer = new ThresholdReplayer(startDate, endDate, 300, rrdName,
                     nodeId, thresholdType, thresholdValue, thresholdRearm,
                     thresholdTrigger, rrdBasePath, outPath);
             thresholdReplayer.generateThresholdOverlayPNG();

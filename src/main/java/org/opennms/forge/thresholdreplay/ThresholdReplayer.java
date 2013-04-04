@@ -55,6 +55,7 @@ public class ThresholdReplayer {
     private static Logger logger = LoggerFactory.getLogger(ThresholdReplayer.class);
     private String startDate;
     private String endDate;
+    private Integer desiredResolution;
     private String rrdName;
     private String nodeId;
     private final String thresholdType;
@@ -71,9 +72,10 @@ public class ThresholdReplayer {
     private String overlayGraphCommand = "";
     private DateTimeFormatter fmt = DateTimeFormat.forPattern("YYYY-MM-dd");
 
-    public ThresholdReplayer(String startDate, String endDate, String rrdName, String nodeId, String thresholdType, double thresholdValue, double thresholdRearm, int thresholdTrigger, String rrdBasePath, String outPath) {
+    public ThresholdReplayer(String startDate, String endDate, Integer desiredResolution, String rrdName, String nodeId, String thresholdType, double thresholdValue, double thresholdRearm, int thresholdTrigger, String rrdBasePath, String outPath) {
         this.startDate = startDate;
         this.endDate = endDate;
+        this.desiredResolution = desiredResolution;
         this.rrdName = rrdName;
         this.nodeId = nodeId;
         this.thresholdType = thresholdType;
@@ -205,7 +207,7 @@ public class ThresholdReplayer {
     }
 
     private boolean generateRrdOverlay() {
-        return rrdOverlay.initRrdMeasurmentOverlay(jrb, rrdName, startTimestamp, endTimestamp);
+        return rrdOverlay.initRrdMeasurmentOverlay(jrb, rrdName, startTimestamp, endTimestamp, desiredResolution);
     }
 
     private void storeGraphPNG(File graphPNG, String graphCommand, File jrbFile) {
