@@ -92,7 +92,9 @@ public class ThresholdReplayer {
     }
 
     private void generateOverlayGraphCommand() {
-        overlayGraphCommand = "--start=" + startTimestamp + " --end=" + endTimestamp + " --title=\"Metric/Overlay = " + rrdName + " NodeId = " + nodeId + "\" "
+        overlayGraphCommand = "--start=" + startTimestamp + " --end=" + endTimestamp + 
+                " --title=\"Metric/Overlay=" + rrdName + " NodeId=" + nodeId  
+                + " Th-Type=" + thresholdType + " Th-Value=" + thresholdValue + " Th-Rearm=" + thresholdRearm + " Th-Trigger=" + thresholdTrigger + "\" "
                 + "--width=1200 --height=600 "
                 + "--vertical-label=\"Metric\" "
                 + "DEF:metric=" + jrb.getAbsolutePath() + ":" + rrdName + ":AVERAGE "
@@ -120,6 +122,12 @@ public class ThresholdReplayer {
             System.out.println("Next :: runRrdOverlayToThresholder");
             runRrdOverlayToThresholder();
 
+            if(true) {
+                if (jrbOverlay.canWrite()) {
+                    jrbOverlay.delete();
+                }
+            }
+            
             System.out.println("Next :: createMiniOverlayRrdFile");
             createMiniOverlayRrdFile();
 
@@ -129,10 +137,14 @@ public class ThresholdReplayer {
             System.out.println("Next :: generateOverlayGraphCommand");
             generateOverlayGraphCommand();
 
-            File overlayGraphPNG = new File(jrbOverlay.getAbsolutePath().replace(rrdFileEnding, ".png"));
             System.out.println("Next :: storeGraphPNG");
-
+            File overlayGraphPNG = new File(jrbOverlay.getAbsolutePath().replace(rrdFileEnding, ".png"));
             storeGraphPNG(overlayGraphPNG, overlayGraphCommand, jrbOverlay);
+            
+//            if(false) {
+//                jrbOverlay.delete();
+//            }
+            
             System.out.println("DONE :: Thanks for computing with OpenNMS!");
         } else {
             System.out.println("No rrdOverlay possible, ignorring :: " + jrb.getAbsolutePath());
@@ -205,10 +217,6 @@ public class ThresholdReplayer {
             while ((read = createGraph.read(bytes)) != -1) {
                 out.write(bytes, 0, read);
             }
-
-            System.out.println("debug :: " + "createGraph.close()");
-            System.out.println("debug :: " + "out.flush()");
-            System.out.println("debug :: " + "out.close()");
 
             createGraph.close();
             out.flush();
