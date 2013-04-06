@@ -1,8 +1,7 @@
 package org.opennms.forge.thresholdreplay;
 
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.Period;
 
 /**
  *
@@ -31,12 +30,12 @@ public class ThresholdOccur {
         return rearmed;
     }
 
-    public Duration getDuration() {
-        Duration duration = new Duration(0);
+    public Period getPeriod() {
+        Period period = new Period(0);
         if (rearmed != null) { 
-            duration = new Duration(exeeded, rearmed);
+            period = new Period(exeeded, rearmed);
         }
-        return duration;
+        return period;
     }
 
     public Object getThresholdDefinition() {

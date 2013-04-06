@@ -49,6 +49,124 @@ public class ThresholdReplayerTest {
     }
 
     @Test
+    public void testThCorrentTcpConnectionAc100() {
+        List<String> nodeIds = new ArrayList<String>();
+//        nodeIds.add("440");
+        nodeIds.add("441");
+        startDate = "2013-04-02";
+        endDate = "2013-04-05";
+        desiredResolution = 120;
+        rrdName = "tcpCurrEstab";
+        thresholdType = "absoluteChange";
+        thresholdValue = 100.0;
+        thresholdRearm = 0.0;
+        thresholdTrigger = 1;
+        rrdBasePath = "/home/tak/Desktop/Bonnier/rrds/";
+        outPath = "/tmp/tr/out/";
+
+        for (String nodeId : nodeIds) {
+            thresholdReplayer = new ThresholdReplayer(startDate, endDate, 300, rrdName,
+                    nodeId, thresholdType, thresholdValue, thresholdRearm,
+                    thresholdTrigger, rrdBasePath, outPath);
+            thresholdReplayer.generateThresholdOverlayPNG();
+        }
+    }
+
+    @Test
+    public void testThCorrentTcpConnectionAc400() {
+        List<String> nodeIds = new ArrayList<String>();
+//        nodeIds.add("440");
+        nodeIds.add("441");
+        startDate = "2013-04-02";
+        endDate = "2013-04-05";
+        desiredResolution = 120;
+        rrdName = "tcpCurrEstab";
+        thresholdType = "absoluteChange";
+        thresholdValue = 400.0;
+        thresholdRearm = 0.0;
+        thresholdTrigger = 1;
+        rrdBasePath = "/home/tak/Desktop/Bonnier/rrds/";
+        outPath = "/tmp/tr/out/";
+
+        for (String nodeId : nodeIds) {
+            thresholdReplayer = new ThresholdReplayer(startDate, endDate, 300, rrdName,
+                    nodeId, thresholdType, thresholdValue, thresholdRearm,
+                    thresholdTrigger, rrdBasePath, outPath);
+            thresholdReplayer.generateThresholdOverlayPNG();
+        }
+    }
+    
+    @Test
+    public void testThCorrentTcpConnectionH1000() {
+        List<String> nodeIds = new ArrayList<String>();
+        nodeIds.add("441");
+        startDate = "2013-04-02";
+        endDate = "2013-04-05";
+        desiredResolution = 120;
+        rrdName = "tcpCurrEstab";
+        thresholdType = "high";
+        thresholdValue = 1000.0;
+        thresholdRearm = 700.0;
+        thresholdTrigger = 3;
+        rrdBasePath = "/home/tak/Desktop/Bonnier/rrds/";
+        outPath = "/tmp/tr/out/";
+
+        for (String nodeId : nodeIds) {
+            thresholdReplayer = new ThresholdReplayer(startDate, endDate, 300, rrdName,
+                    nodeId, thresholdType, thresholdValue, thresholdRearm,
+                    thresholdTrigger, rrdBasePath, outPath);
+            thresholdReplayer.generateThresholdOverlayPNG();
+        }
+    }
+    
+    @Test
+    public void testThCorrentTcpConnectionH400() {
+        List<String> nodeIds = new ArrayList<String>();
+        nodeIds.add("441");
+        startDate = "2013-04-02";
+        endDate = "2013-04-05";
+        desiredResolution = 120;
+        rrdName = "tcpCurrEstab";
+        thresholdType = "high";
+        thresholdValue = 400.0;
+        thresholdRearm = 350.0;
+        thresholdTrigger = 3;
+        rrdBasePath = "/home/tak/Desktop/Bonnier/rrds/";
+        outPath = "/tmp/tr/out/";
+
+        for (String nodeId : nodeIds) {
+            thresholdReplayer = new ThresholdReplayer(startDate, endDate, 300, rrdName,
+                    nodeId, thresholdType, thresholdValue, thresholdRearm,
+                    thresholdTrigger, rrdBasePath, outPath);
+            thresholdReplayer.generateThresholdOverlayPNG();
+        }
+    }
+
+    @Test
+    public void testThCorrentTcpConnectionH250() {
+        List<String> nodeIds = new ArrayList<String>();
+        nodeIds.add("441");
+        startDate = "2013-04-02";
+        endDate = "2013-04-05";
+        desiredResolution = 300;
+        rrdName = "tcpCurrEstab";
+        thresholdType = "high";
+        thresholdValue = 250.0;
+        thresholdRearm = 235.0;
+        thresholdTrigger = 3;
+        rrdBasePath = "/home/tak/Desktop/Bonnier/rrds/";
+        outPath = "/tmp/tr/out/";
+
+        for (String nodeId : nodeIds) {
+            thresholdReplayer = new ThresholdReplayer(startDate, endDate, 300, rrdName,
+                    nodeId, thresholdType, thresholdValue, thresholdRearm,
+                    thresholdTrigger, rrdBasePath, outPath);
+            thresholdReplayer.generateThresholdOverlayPNG();
+        }
+    }
+    
+    
+    @Test
     public void testGenerateThresholdOverlayPNG() {
         System.out.println("generateThresholdOverlayPNG");
         List<String> nodeIds = new ArrayList<String>();

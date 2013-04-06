@@ -35,9 +35,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
@@ -73,7 +74,7 @@ public class ThresholdReplayer {
     private RrdOverlay rrdOverlay = new RrdOverlay();
     private long startTimestamp;
     private long endTimestamp;
-    private Map<Long, Double> overlayMap = new LinkedHashMap<Long, Double>();
+    private Map<Instant, Double> overlayMap = new LinkedHashMap<Instant, Double>();
     private String overlayGraphCommand = "";
     private DateTimeFormatter fmt = DateTimeFormat.forPattern("YYYY-MM-dd");
     private List<ThresholdOccur> thresholdOccurs = new LinkedList<ThresholdOccur>();
@@ -145,7 +146,9 @@ public class ThresholdReplayer {
             logger.debug("Next :: storeGraphPNG");
             File overlayGraphPNG = new File(jrbOverlay.getAbsolutePath().replace(rrdFileEnding, ".png"));
             storeGraphPNG(overlayGraphPNG, overlayGraphCommand, jrbOverlay);
-
+            String[] args = new String[1];
+            args[0] = overlayGraphPNG.getAbsolutePath();
+            GraphPngDisplay.main(args);
             printReport();
 //            if(false) {
 //                jrbOverlay.delete();
@@ -184,34 +187,33 @@ public class ThresholdReplayer {
         if (item != null) {
             ThresholdOccur thresholdOccur = null;
             Boolean isExeeded = false;
-            while (rrdOverlay.hasNextStep()) {
-                status = item.evaluate(rrdOverlay.getValue());
+            for (Entry<Instant, Double> entry : rrdOverlay.getRrdMap().entrySet()) {
+                status = item.evaluate(entry.getValue());
                 if (status.equals(Status.TRIGGERED)) {
                     isExeeded = true;
-                    thresholdOccur = new ThresholdOccur(new Instant(rrdOverlay.getTimeStamp()), null);
-                    logger.debug("Threshold TRIGGERED at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue());
+                    thresholdOccur = new ThresholdOccur(new Instant(entry.getKey()), null);
+                    logger.debug("Threshold TRIGGERED at :: " + entry.getKey() + "\t with :: " + entry.getValue());
                 }
                 if (status.equals(Status.RE_ARMED)) {
                     isExeeded = false;
-                    thresholdOccur.setRearmed(new Instant(rrdOverlay.getTimeStamp()));
+                    thresholdOccur.setRearmed(entry.getKey());
                     thresholdOccurs.add(thresholdOccur);
-                    logger.debug("Threshold RE_ARMED  at :: " + rrdOverlay.getTime() + "\t with :: " + rrdOverlay.getValue() + " after " + thresholdOccur.getDuration().getMillis() + "ms.");
+                    logger.debug("Threshold RE_ARMED  at :: " + entry.getKey() + "\t with :: " + entry.getValue() + " after " + formatPeriod(thresholdOccur.getPeriod()));
                 }
 
                 if (isExeeded) {
-                    overlayMap.put(rrdOverlay.getTimeStamp(), rrdOverlay.getValue());
+                    overlayMap.put(entry.getKey(), entry.getValue());
                 } else {
-                    overlayMap.put(rrdOverlay.getTimeStamp(), Double.NaN);
+                    overlayMap.put(entry.getKey(), Double.NaN);
                 }
                 /**
                  * Fake re_arms for absoluteChange and relativeChange to make
                  * every exeeded visible.
                  */
-                if (isExeeded && (thresholdType.equals("absoluteChange") || thresholdType.equals("relativeChange")) ) {
+                if (isExeeded && (thresholdType.equals("absoluteChange") || thresholdType.equals("relativeChange"))) {
                     isExeeded = false;
                     thresholdOccurs.add(thresholdOccur);
                 }
-                rrdOverlay.nextStep();
             }
         }
     }
@@ -250,9 +252,9 @@ public class ThresholdReplayer {
     }
 
     private void editOverlayRrdFile() {
-        for (Long timestamp : overlayMap.keySet()) {
+        for (Entry<Instant, Double> entry : overlayMap.entrySet()) {
             try {
-                RrdUtils.updateRRD("Threshold-Replay", jrbOverlay.getParent(), nodeId + "_" + rrdName + "_Overlay", timestamp * 1000, overlayMap.get(timestamp).toString());
+                RrdUtils.updateRRD("Threshold-Replay", jrbOverlay.getParent(), nodeId + "_" + rrdName + "_Overlay", entry.getKey().getMillis(), entry.getValue().toString());
             } catch (RrdException ex) {
                 logger.error("RrdUtils.updateRRD :: " + ex.getMessage());
             }
@@ -275,15 +277,15 @@ public class ThresholdReplayer {
     }
 
     private void printReport() {
-        Duration totalDuration = new Duration(0);
+        Period totalPeriod = new Period(0);
         for (ThresholdOccur thresholdOccur : thresholdOccurs) {
-            totalDuration = totalDuration.plus(thresholdOccur.getDuration());
+            totalPeriod = totalPeriod.plus(thresholdOccur.getPeriod());
         }
 
-        logger.debug("Node " + nodeId + " had " + thresholdOccurs.size() + " threshold occurences with an over all duration of " + getPeriodFormatter().print(totalDuration.toPeriod()) + ".");
+        logger.debug("Node " + nodeId + " had " + thresholdOccurs.size() + " threshold occurences with an over all duration of " + formatPeriod(totalPeriod) + ".");
     }
 
-    private PeriodFormatter getPeriodFormatter() {
+    private String formatPeriod(Period period) {
         PeriodFormatter daysHoursMinutes = new PeriodFormatterBuilder()
                 .appendDays()
                 .appendSuffix(" day", " days")
@@ -294,6 +296,6 @@ public class ThresholdReplayer {
                 .appendSeconds()
                 .appendSuffix(" second", " seconds")
                 .toFormatter();
-        return daysHoursMinutes;
+        return daysHoursMinutes.print(period);
     }
 }
