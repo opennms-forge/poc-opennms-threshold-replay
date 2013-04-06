@@ -8,7 +8,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -16,7 +15,7 @@ import static org.junit.Assert.*;
  */
 public class ThresholdReplayerTest {
 
-    private ThresholdReplayer thresholdReplayer;
+    private JohnDo thresholdReplayer;
     private String startDate;
     private String endDate;
     private Integer desiredResolution;
@@ -65,7 +64,7 @@ public class ThresholdReplayerTest {
         outPath = "/tmp/tr/out/";
 
         for (String nodeId : nodeIds) {
-            thresholdReplayer = new ThresholdReplayer(startDate, endDate, 300, rrdName,
+            thresholdReplayer = new JohnDo(startDate, endDate, 300, rrdName,
                     nodeId, thresholdType, thresholdValue, thresholdRearm,
                     thresholdTrigger, rrdBasePath, outPath);
             thresholdReplayer.generateThresholdOverlayPNG();
@@ -89,7 +88,7 @@ public class ThresholdReplayerTest {
         outPath = "/tmp/tr/out/";
 
         for (String nodeId : nodeIds) {
-            thresholdReplayer = new ThresholdReplayer(startDate, endDate, 300, rrdName,
+            thresholdReplayer = new JohnDo(startDate, endDate, 300, rrdName,
                     nodeId, thresholdType, thresholdValue, thresholdRearm,
                     thresholdTrigger, rrdBasePath, outPath);
             thresholdReplayer.generateThresholdOverlayPNG();
@@ -112,7 +111,7 @@ public class ThresholdReplayerTest {
         outPath = "/tmp/tr/out/";
 
         for (String nodeId : nodeIds) {
-            thresholdReplayer = new ThresholdReplayer(startDate, endDate, 300, rrdName,
+            thresholdReplayer = new JohnDo(startDate, endDate, 300, rrdName,
                     nodeId, thresholdType, thresholdValue, thresholdRearm,
                     thresholdTrigger, rrdBasePath, outPath);
             thresholdReplayer.generateThresholdOverlayPNG();
@@ -135,7 +134,7 @@ public class ThresholdReplayerTest {
         outPath = "/tmp/tr/out/";
 
         for (String nodeId : nodeIds) {
-            thresholdReplayer = new ThresholdReplayer(startDate, endDate, 300, rrdName,
+            thresholdReplayer = new JohnDo(startDate, endDate, 300, rrdName,
                     nodeId, thresholdType, thresholdValue, thresholdRearm,
                     thresholdTrigger, rrdBasePath, outPath);
             thresholdReplayer.generateThresholdOverlayPNG();
@@ -158,7 +157,7 @@ public class ThresholdReplayerTest {
         outPath = "/tmp/tr/out/";
 
         for (String nodeId : nodeIds) {
-            thresholdReplayer = new ThresholdReplayer(startDate, endDate, 300, rrdName,
+            thresholdReplayer = new JohnDo(startDate, endDate, 300, rrdName,
                     nodeId, thresholdType, thresholdValue, thresholdRearm,
                     thresholdTrigger, rrdBasePath, outPath);
             thresholdReplayer.generateThresholdOverlayPNG();
@@ -193,7 +192,7 @@ public class ThresholdReplayerTest {
 
         for (String nodeId : nodeIds) {
 
-            thresholdReplayer = new ThresholdReplayer(startDate, endDate, 300, rrdName,
+            thresholdReplayer = new JohnDo(startDate, endDate, 300, rrdName,
                     nodeId, thresholdType, thresholdValue, thresholdRearm,
                     thresholdTrigger, rrdBasePath, outPath);
             thresholdReplayer.generateThresholdOverlayPNG();

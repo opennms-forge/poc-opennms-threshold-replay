@@ -10,24 +10,23 @@ import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RrdOverlay implements TimeSeriesMapProvider {
+public class JrbTimeSeriesProvider implements TimeSeriesMapProvider {
 
     private static Logger logger = LoggerFactory.getLogger(JohnDo.class);
-    private RrdDb rrdDb;
     private Map<Instant, Double> timeSeriesMap = new LinkedHashMap<Instant, Double>();
     
+    private RrdDb rrdDb;
     private long[] timestamps;
     private double[] values;
     
-    private Integer stepIndex = 0;
     private Long stepSize;
             
-    public boolean initRrdMeasurmentOverlay(File jrb, String dsName, long startTimestamp, long endTimestamp, Integer desiredResolution) {
+    public boolean initRrdMeasurmentOverlay(File jrb, String dsName, Instant start, Instant end, Integer desiredResolution) {
         boolean hasWorked = false;
         try {
             if (jrb.exists() && jrb.canRead()) {
             rrdDb = new RrdDb(jrb.getAbsoluteFile(), true);
-            FetchData fetchData = rrdDb.createFetchRequest("AVERAGE", startTimestamp, endTimestamp, desiredResolution).fetchData();
+            FetchData fetchData = rrdDb.createFetchRequest("AVERAGE", start.getMillis()/1000, end.getMillis()/1000, desiredResolution).fetchData();
             timestamps = fetchData.getTimestamps();
             values = fetchData.getValues(dsName);            
             for (int i = 0; i < timestamps.length; i++) {
@@ -45,29 +44,6 @@ public class RrdOverlay implements TimeSeriesMapProvider {
             logger.error("Sorry", ex);
         }
         return hasWorked;
-    }
-    
-    public double getValue() {
-        return values[stepIndex];
-    }
-
-    public Integer nextStep() {
-        stepIndex++;
-        if (stepIndex > timestamps.length) {
-            return -1;
-        }
-        return stepIndex;
-    }
-
-    public boolean hasNextStep() {
-        if (stepIndex == timestamps.length) {
-            return false;
-        }
-        return true;
-    }
-
-    public Instant getTimeStamp() {
-        return new Instant(timestamps[stepIndex]);
     }
     
     public Long getStepSize() {
