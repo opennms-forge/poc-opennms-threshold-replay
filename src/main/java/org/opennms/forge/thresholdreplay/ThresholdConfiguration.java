@@ -56,4 +56,8 @@ class ThresholdConfiguration {
     public int getThresholdTrigger() {
         return thresholdTrigger;
     }
+
+    public String toFormatedString() {
+        return thresholdCategory + " :: " + dataSourceName + " :: " + dataSourceType + "\n" + thresholdType + ", value " + thresholdValue + ", rearm " + thresholdRearm + ", trigger " + thresholdTrigger;
+    }
 }
