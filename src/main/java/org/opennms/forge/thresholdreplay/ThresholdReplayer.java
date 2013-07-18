@@ -3,6 +3,7 @@ package org.opennms.forge.thresholdreplay;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.joda.time.Instant;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
@@ -24,6 +25,11 @@ public class ThresholdReplayer {
 
     private static Logger logger = LoggerFactory.getLogger(ThresholdReplayer.class);
 
+    public static ThresholdReplayCampain run(ThresholdReplayCampain thresholdReplayCampain) {
+        assert (false);
+        return thresholdReplayCampain;
+    }
+    
     public static ThresholdReplay replayThresholdAgainstTimeSeriesDataMap(ThresholdConfiguration thresholdConfiguration, Map<Instant, Double> timeSeriesDataMap) {
 
         ThresholdEvaluatorState thresholdEvaluatorState = createThresholdEvaluatorState(thresholdConfiguration);
@@ -31,17 +37,19 @@ public class ThresholdReplayer {
 
         List<ThresholdOccur> thresholdOccurs = new LinkedList<ThresholdOccur>();
         ThresholdOccur thresholdOccur = null;
-        for (Map.Entry<Instant, Double> entry : timeSeriesDataMap.entrySet()) {
+        Entry<Instant, Double> previousEntry = null;
+        for (Entry<Instant, Double> entry : timeSeriesDataMap.entrySet()) {
             status = thresholdEvaluatorState.evaluate(entry.getValue());
             if (status.equals(ThresholdEvaluatorState.Status.TRIGGERED)) {
                 thresholdOccur = new ThresholdOccur(new Instant(entry.getKey()), null);
-                logger.debug("Threshold TRIGGERED at :: " + entry.getKey() + "\t with :: " + entry.getValue());
+                thresholdOccurs.add(thresholdOccur);
+                logger.debug("Threshold TRIGGERED at :: " + entry.getKey().toDate() + " with :: " + String.format("%1$.2f", entry.getValue()) + " change of :: " + String.format("%1$.2f", (entry.getValue() - previousEntry.getValue())));
             }
             if (status.equals(ThresholdEvaluatorState.Status.RE_ARMED)) {
                 thresholdOccur.setRearmed(entry.getKey());
-                thresholdOccurs.add(thresholdOccur);
-                logger.debug("Threshold RE_ARMED  at :: " + entry.getKey() + "\t with :: " + entry.getValue() + " after " + formatPeriod(thresholdOccur.getPeriod()));
+                logger.debug("Threshold RE_ARMED  at :: " + entry.getKey() + " with :: " + String.format("%1$.2f", entry.getValue()) + " after :: " + formatPeriod(thresholdOccur.getPeriod()));
             }
+            previousEntry = entry;
         }
         ThresholdReplay thresholdReplay = new ThresholdReplay(thresholdConfiguration, thresholdOccurs);
 
@@ -60,10 +68,10 @@ public class ThresholdReplayer {
         ThresholdEvaluatorState thresholdEvaluatorState = null;
         if (threshold.getType().equals("high") || threshold.getType().equals("low")) {
             thresholdEvaluatorState = new ThresholdEvaluatorHighLow.ThresholdEvaluatorStateHighLow(wrapper);
-        } else if (threshold.getDsType().equals("absoluteChange")) {
+        } else if (threshold.getType().equals("absoluteChange")) {
             thresholdEvaluatorState = new ThresholdEvaluatorAbsoluteChange.ThresholdEvaluatorStateAbsoluteChange(wrapper);
         }
-        if (threshold.getDsType().equals("relativeChange")) {
+        if (threshold.getType().equals("relativeChange")) {
             thresholdEvaluatorState = new ThresholdEvaluatorRelativeChange.ThresholdEvaluatorStateRelativeChange(wrapper);
         }
         return thresholdEvaluatorState;
