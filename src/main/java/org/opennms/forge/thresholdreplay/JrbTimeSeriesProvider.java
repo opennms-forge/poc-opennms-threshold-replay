@@ -18,7 +18,6 @@ public class JrbTimeSeriesProvider implements TimeSeriesMapProvider {
     private RrdDb rrdDb;
     private long[] timestamps;
     private double[] values;
-    
     private Long stepSize;
             
     public boolean initRrdMeasurmentOverlay(File jrb, String dsName, Instant start, Instant end, Integer desiredResolution) {
