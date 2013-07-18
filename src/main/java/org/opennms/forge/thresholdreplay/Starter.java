@@ -110,7 +110,7 @@ public class Starter {
     
     protected void start(Instant start, Instant end, String rrdBasePath, String nodeId, String rrdName, String thresholdType, Double thresholdValue, Double thresholdRearm, Integer thresholdTrigger, Integer desiredResolution) {
         logger.info("OpenNMS Threshold Replay");
-
+        
         File jrbFile = new File(rrdBasePath + "/" + nodeId + "/" + rrdName + RRD_FILE_ENDING);
 
         ThresholdConfiguration thresholdConfiguration = new ThresholdConfiguration("TH_Metirc-Type-Level", rrdName, thresholdType, thresholdValue, thresholdRearm, thresholdTrigger);
@@ -119,7 +119,7 @@ public class Starter {
         jrbTimeSeriesProvider.initRrdMeasurmentOverlay(jrbFile, rrdName, start, end, desiredResolution);
         Map<Instant, Double> timeSeriesMap = jrbTimeSeriesProvider.getTimeSeriesMap();
         ThresholdReplay replayThresholdAgainstTimeSeriesDataMap = ThresholdReplayer.replayThresholdAgainstTimeSeriesDataMap(thresholdConfiguration, timeSeriesMap);
-
+        logger.info(replayThresholdAgainstTimeSeriesDataMap.toFormatedString());
         logger.info("Thanks for computing with OpenNMS!");
     }
 }
