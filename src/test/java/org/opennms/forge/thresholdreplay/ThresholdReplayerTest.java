@@ -60,7 +60,7 @@ public class ThresholdReplayerTest {
         thresholdValue = 100.0;
         thresholdRearm = 0.0;
         thresholdTrigger = 1;
-        rrdBasePath = "/home/tak/Desktop/Bonnier/rrds/";
+        rrdBasePath = "/home/tak/Desktop/BD/rrds/";
         outPath = "/tmp/tr/out/";
 
         for (String nodeId : nodeIds) {
@@ -84,7 +84,7 @@ public class ThresholdReplayerTest {
         thresholdValue = 400.0;
         thresholdRearm = 0.0;
         thresholdTrigger = 1;
-        rrdBasePath = "/home/tak/Desktop/Bonnier/rrds/";
+        rrdBasePath = "/home/tak/Desktop/BD/rrds/";
         outPath = "/tmp/tr/out/";
 
         for (String nodeId : nodeIds) {
@@ -107,7 +107,7 @@ public class ThresholdReplayerTest {
         thresholdValue = 1000.0;
         thresholdRearm = 700.0;
         thresholdTrigger = 3;
-        rrdBasePath = "/home/tak/Desktop/Bonnier/rrds/";
+        rrdBasePath = "/home/tak/Desktop/BD/rrds/";
         outPath = "/tmp/tr/out/";
 
         for (String nodeId : nodeIds) {
@@ -130,7 +130,7 @@ public class ThresholdReplayerTest {
         thresholdValue = 400.0;
         thresholdRearm = 350.0;
         thresholdTrigger = 3;
-        rrdBasePath = "/home/tak/Desktop/Bonnier/rrds/";
+        rrdBasePath = "/home/tak/Desktop/BD/rrds/";
         outPath = "/tmp/tr/out/";
 
         for (String nodeId : nodeIds) {
@@ -153,7 +153,7 @@ public class ThresholdReplayerTest {
         thresholdValue = 250.0;
         thresholdRearm = 235.0;
         thresholdTrigger = 3;
-        rrdBasePath = "/home/tak/Desktop/Bonnier/rrds/";
+        rrdBasePath = "/home/tak/Desktop/BD/rrds/";
         outPath = "/tmp/tr/out/";
 
         for (String nodeId : nodeIds) {
