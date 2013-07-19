@@ -9,12 +9,12 @@ import org.joda.time.Period;
  */
 public class ThresholdOccur {
 
-    private Instant exeeded;
+    private Instant exceeded;
     private Instant rearmed;
     private Object thresholdDefinition;
 
     public ThresholdOccur(Instant exeeded, Object thresholdDefinition) {
-        this.exeeded = exeeded;
+        this.exceeded = exeeded;
         this.thresholdDefinition = thresholdDefinition;
     }
 
@@ -22,8 +22,8 @@ public class ThresholdOccur {
         this.rearmed = rearmed;
     }
 
-    public Instant getExeeded() {
-        return exeeded;
+    public Instant getExceeded() {
+        return exceeded;
     }
 
     public Instant getRearmed() {
@@ -33,7 +33,7 @@ public class ThresholdOccur {
     public Period getPeriod() {
         Period period = new Period(0);
         if (rearmed != null) { 
-            period = new Period(exeeded, rearmed);
+            period = new Period(exceeded, rearmed);
         }
         return period;
     }

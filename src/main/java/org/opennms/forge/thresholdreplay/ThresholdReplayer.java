@@ -77,7 +77,7 @@ public class ThresholdReplayer {
         return thresholdEvaluatorState;
     }
 
-    //TODO find a better place for this pice
+    //TODO find a better place for this piece
     private static String formatPeriod(Period period) {
         PeriodFormatter daysHoursMinutes = new PeriodFormatterBuilder()
                 .appendDays()

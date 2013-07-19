@@ -244,7 +244,9 @@ public class JohnDo {
             logger.error("storeGraphPNG :: " + ex.getMessage());
         } finally {
             try {
-                createGraph.close();
+                if (createGraph != null) {
+                    createGraph.close();
+                }
             } catch (IOException ex) {
                 logger.error("storeGraphPNG finally :: " + ex.getMessage());
             }

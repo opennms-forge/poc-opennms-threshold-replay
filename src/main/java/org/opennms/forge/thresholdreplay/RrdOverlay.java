@@ -26,16 +26,16 @@ public class RrdOverlay implements TimeSeriesMapProvider {
         boolean hasWorked = false;
         try {
             if (jrb.exists() && jrb.canRead()) {
-            rrdDb = new RrdDb(jrb.getAbsoluteFile(), true);
-            FetchData fetchData = rrdDb.createFetchRequest("AVERAGE", startTimestamp, endTimestamp, desiredResolution).fetchData();
-            timestamps = fetchData.getTimestamps();
-            values = fetchData.getValues(dsName);            
-            for (int i = 0; i < timestamps.length; i++) {
-                //Rrd is using secondes instead of millisecondes so we multiply
-                timeSeriesMap.put(new Instant(timestamps[i]*1000), values[i]);
-            }
-            hasWorked = true;
-            stepSize = desiredResolution.longValue();
+                rrdDb = new RrdDb(jrb.getAbsoluteFile(), true);
+                FetchData fetchData = rrdDb.createFetchRequest("AVERAGE", startTimestamp, endTimestamp, desiredResolution).fetchData();
+                timestamps = fetchData.getTimestamps();
+                values = fetchData.getValues(dsName);
+                for (int i = 0; i < timestamps.length; i++) {
+                    //Rrd is using seconds instead of milliseconds so we multiply
+                    timeSeriesMap.put(new Instant(timestamps[i]*1000), values[i]);
+                }
+                hasWorked = true;
+                stepSize = desiredResolution.longValue();
             } else {
                 hasWorked = false; 
             }
@@ -60,10 +60,7 @@ public class RrdOverlay implements TimeSeriesMapProvider {
     }
 
     public boolean hasNextStep() {
-        if (stepIndex == timestamps.length) {
-            return false;
-        }
-        return true;
+        return stepIndex != timestamps.length;
     }
 
     public Instant getTimeStamp() {

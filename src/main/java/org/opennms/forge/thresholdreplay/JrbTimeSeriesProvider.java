@@ -29,7 +29,7 @@ public class JrbTimeSeriesProvider implements TimeSeriesMapProvider {
             timestamps = fetchData.getTimestamps();
             values = fetchData.getValues(dsName);            
             for (int i = 0; i < timestamps.length; i++) {
-                //Rrd is using secondes instead of millisecondes so we multiply
+                //Rrd is using seconds instead of milliseconds so we multiply
                 timeSeriesMap.put(new Instant(timestamps[i]*1000), values[i]);
             }
             hasWorked = true;

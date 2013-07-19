@@ -37,11 +37,11 @@ public class ThresholdReplay {
         for (ThresholdOccur thresholdOccur : thresholdOccurs) {
             overallPeriod = overallPeriod.plus(thresholdOccur.getPeriod());
         }
-        result = result.concat("\t Threshold exeeded " + thresholdOccurs.size() + " times for overall " + formatPeriod(overallPeriod) + "\n");
+        result = result.concat("\t Threshold exceeded " + thresholdOccurs.size() + " times for overall " + formatPeriod(overallPeriod) + "\n");
         return result;
     }
     
-    //TODO find a better place for this pice
+    //TODO find a better place for this piece
     private static String formatPeriod(Period period) {
         PeriodFormatter daysHoursMinutes = new PeriodFormatterBuilder()
                 .appendDays()
