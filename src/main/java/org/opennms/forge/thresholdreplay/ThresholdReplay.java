@@ -30,7 +30,7 @@ public class ThresholdReplay {
         return thresholdOccurs;
     }
     
-    public String toFormatedString() {
+    public String toFormattedString() {
         String result = "\n";
         result = result.concat(thresholdConfiguration.toFormatedString() + "\n");
         Period overallPeriod = new Period();

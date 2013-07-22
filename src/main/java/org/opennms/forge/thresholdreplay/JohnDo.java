@@ -55,7 +55,7 @@ import org.opennms.netmgt.threshd.ThresholdEvaluatorState;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+// original piece of prototyping code
 public class JohnDo {
 
     private static Logger logger = LoggerFactory.getLogger(JohnDo.class);
@@ -97,11 +97,11 @@ public class JohnDo {
         DateTime parseDateTime = fmt.parseDateTime(date);
         return parseDateTime.getMillis() / 1000;
     }
-
-    private void generateOverlayGraphCommand() {
-        overlayGraphCommand = "--start=" + startTimestamp + " --end=" + endTimestamp
+    //TODO needs to be some where
+    public static String generateOverlayGraphCommand(String startTimestamp, String endTimestamp, String rrdName, String nodeId, ThresholdConfiguration thConf, File jrb, File jrbOverlay) {
+        String overlayGraphCommand = "--start=" + startTimestamp + " --end=" + endTimestamp
                 + " --title=\"Metric/Overlay=" + rrdName + " NodeId=" + nodeId
-                + " Th-Type=" + thresholdType + " Th-Value=" + thresholdValue + " Th-Rearm=" + thresholdRearm + " Th-Trigger=" + thresholdTrigger + "\" "
+                + " Th-Type=" + thConf.getThresholdType() + " Th-Value=" + thConf.getThresholdValue() + " Th-Rearm=" + thConf.getThresholdRearm() + " Th-Trigger=" + thConf.getThresholdTrigger() + "\" "
                 + "--width=1200 --height=600 "
                 + "--vertical-label=\"Metric\" "
                 + "DEF:metric=" + jrb.getAbsolutePath() + ":" + rrdName + ":AVERAGE "
@@ -116,6 +116,7 @@ public class JohnDo {
                 + "GPRINT:overlay:AVERAGE:\"Avg Overlay \\: %8.2lf %s\" "
                 + "GPRINT:overlay:MIN:\"Min Overlay \\: %8.2lf %s\" "
                 + "GPRINT:overlay:MAX:\"Max Overlay  \\: %8.2lf %s\" ";
+        return overlayGraphCommand;
     }
 
     public void generateThresholdOverlayPNG() {
@@ -128,7 +129,8 @@ public class JohnDo {
 //            logger.debug("Next :: runRrdOverlayToThresholder");
 //            runRrdOverlayToThresholder();
 
-            if (true) {
+            //Remove png or not...
+            if (false) {
                 if (jrbOverlay.canWrite()) {
                     jrbOverlay.delete();
                 }
@@ -141,7 +143,7 @@ public class JohnDo {
             editOverlayRrdFile();
 
             logger.debug("Next :: generateOverlayGraphCommand");
-            generateOverlayGraphCommand();
+//            generateOverlayGraphCommand(startDate, endDate, rrdName);
 
             logger.debug("Next :: storeGraphPNG");
             File overlayGraphPNG = new File(jrbOverlay.getAbsolutePath().replace(rrdFileEnding, ".png"));
@@ -156,7 +158,7 @@ public class JohnDo {
 
             logger.debug("DONE :: Thanks for computing with OpenNMS!");
         } else {
-            logger.debug("No rrdOverlay possible, ignorring :: " + jrb.getAbsolutePath());
+            logger.debug("No rrdOverlay possible, ignoring :: " + jrb.getAbsolutePath());
         }
 //        File initialGraphPNG = new File(outPath + nodeId + "_" + rrdName + ".png");
 //        storeGraphPNG(initialGraphPNG, initialGraphCommand, jrb);
@@ -228,8 +230,8 @@ public class JohnDo {
 
         InputStream createGraph = null;
         try {
-            createGraph = RrdUtils.createGraph(graphCommand, jrbFile.getParentFile());
             graphPNG.getParentFile().mkdirs();
+            createGraph = RrdUtils.createGraph(graphCommand, jrbFile.getParentFile());
             OutputStream out = new FileOutputStream(graphPNG);
             int read;
             byte[] bytes = new byte[1024];

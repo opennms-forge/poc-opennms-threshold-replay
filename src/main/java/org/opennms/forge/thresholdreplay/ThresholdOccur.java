@@ -13,8 +13,8 @@ public class ThresholdOccur {
     private Instant rearmed;
     private Object thresholdDefinition;
 
-    public ThresholdOccur(Instant exeeded, Object thresholdDefinition) {
-        this.exceeded = exeeded;
+    public ThresholdOccur(Instant exceeded, Object thresholdDefinition) {
+        this.exceeded = exceeded;
         this.thresholdDefinition = thresholdDefinition;
     }
 

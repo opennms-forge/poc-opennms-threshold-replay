@@ -1,12 +1,9 @@
 package org.opennms.forge.thresholdreplay;
 
-/**
- *
- * @author tak
- */
 import java.awt.*;
 import javax.swing.*;
 
+// This class shows a png graphic in a window
 public class GraphPngDisplay extends JFrame {
 
     public GraphPngDisplay(String argx) {

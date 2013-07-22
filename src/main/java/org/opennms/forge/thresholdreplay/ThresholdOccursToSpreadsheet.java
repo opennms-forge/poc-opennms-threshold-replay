@@ -8,8 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- * @author tak
+ * Writes a Spreadsheet about the occured thresholds
  */
 public class ThresholdOccursToSpreadsheet {
 

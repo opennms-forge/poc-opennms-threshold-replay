@@ -30,13 +30,16 @@ public class StarterTest {
         Starter starter = new Starter();
 
         //TODO doing it wrong
-        Instant start = new Instant(new DateTime(2013, 4, 6, 0, 0, 0).getMillis());
-        Instant end = new Instant(new DateTime(2013, 4, 8, 0, 0, 0).getMillis());
+//        Instant start = new Instant(new DateTime(2013, 4, 6, 0, 0, 0).getMillis());
+//        Instant end = new Instant(new DateTime(2013, 4, 8, 0, 0, 0).getMillis());
+        Instant start = new Instant(new DateTime(2013, 5, 28, 14, 10, 0).getMillis());
+        Instant end = new Instant(new DateTime(2013, 5, 28, 15, 40, 0).getMillis());
 
 //        starter.start(start, end, "/opt/opennms/share/rrd/snmp/", "1", "SysRawInterrupts", "high", 1000.0, 800.0, 1, 300);
-        starter.start(start, end, "/home/tak/Desktop/BD/rrds/", "443", "tcpCurrEstab", "absoluteChange", 75.0, 0.0, 1, 300);
+        starter.start(start, end, "src/test/resources/sampleRRDs", "1", "tcpCurrEstab", "absoluteChange", 10.0, 0.0, 1, 120);
+//        starter.start(start, end, "src/test/resources/sampleRRDs", "1", "tcpCurrEstab", "high", 140.0, 135.0, 1, 120);
     }
-    
+
     @Ignore
     @Test
     public void testReadingThresholdConfig() throws FileNotFoundException, MarshalException, ValidationException {
@@ -64,15 +67,14 @@ public class StarterTest {
                     System.out.println("Unsupported Basethresholddef for " + basethresholddef.getDescription());
                 }
             }
-            assertEquals(87, thCoFa.getGroupNames().size());
         }
+        assertEquals(99, thCoFa.getGroupNames().size());
         Instant start = new Instant(new DateTime(2013, 4, 1, 0, 0, 0).getMillis());
         Instant end = new Instant(new DateTime(2013, 4, 3, 0, 0, 0).getMillis());
         List<String> nodes = new ArrayList<String>();
-        nodes.add("667");
+        nodes.add("441");
         JrbTimeSeriesProvider timeSeriesProvider = new JrbTimeSeriesProvider();
         ThresholdReplayCampain thresholdReplayCampain = new ThresholdReplayCampain(nodes, start, end, thresholdConfigurations, timeSeriesProvider);
         thresholdReplayCampain = ThresholdReplayer.run(thresholdReplayCampain);
-        
     }
 }

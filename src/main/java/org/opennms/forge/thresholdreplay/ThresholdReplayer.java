@@ -26,7 +26,6 @@ public class ThresholdReplayer {
     private static Logger logger = LoggerFactory.getLogger(ThresholdReplayer.class);
 
     public static ThresholdReplayCampain run(ThresholdReplayCampain thresholdReplayCampain) {
-        assert (false);
         return thresholdReplayCampain;
     }
     
@@ -40,6 +39,7 @@ public class ThresholdReplayer {
         Entry<Instant, Double> previousEntry = null;
         for (Entry<Instant, Double> entry : timeSeriesDataMap.entrySet()) {
             status = thresholdEvaluatorState.evaluate(entry.getValue());
+
             if (status.equals(ThresholdEvaluatorState.Status.TRIGGERED)) {
                 thresholdOccur = new ThresholdOccur(new Instant(entry.getKey()), null);
                 thresholdOccurs.add(thresholdOccur);

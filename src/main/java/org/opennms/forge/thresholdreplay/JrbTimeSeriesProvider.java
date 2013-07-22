@@ -10,16 +10,18 @@ import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//TODO Same as the RrdOverlay just other format for dates
 public class JrbTimeSeriesProvider implements TimeSeriesMapProvider {
 
-    private static Logger logger = LoggerFactory.getLogger(JohnDo.class);
-    private Map<Instant, Double> timeSeriesMap = new LinkedHashMap<Instant, Double>();
-    
+    private static Logger logger = LoggerFactory.getLogger(JrbTimeSeriesProvider.class);
     private RrdDb rrdDb;
+    private Map<Instant, Double> timeSeriesMap = new LinkedHashMap<Instant, Double>();
+
     private long[] timestamps;
     private double[] values;
+
     private Long stepSize;
-            
+
     public boolean initRrdMeasurmentOverlay(File jrb, String dsName, Instant start, Instant end, Integer desiredResolution) {
         boolean hasWorked = false;
         try {

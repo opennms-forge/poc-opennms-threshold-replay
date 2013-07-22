@@ -168,18 +168,19 @@ public class ThresholdReplayerTest {
     public void testGenerateThresholdOverlayPNG() {
         System.out.println("generateThresholdOverlayPNG");
         List<String> nodeIds = new ArrayList<String>();
-        nodeIds.add("1");
+        nodeIds.add("441");
         startDate = "2013-04-01";
         endDate = "2013-04-02";
         desiredResolution = 300;
-        rrdName = "SysInterrupts";
+        rrdName = "tcpCurrEstab";
         thresholdType = "high";
 //        thresholdType = "absoluteChange";
 //        thresholdType = "relativeChange";
         thresholdValue = 1000.0;
         thresholdRearm = 800.0;
         thresholdTrigger = 1;
-        rrdBasePath = "/opt/opennms/share/rrd/snmp/";
+        rrdBasePath = "/home/tak/Desktop/BD/rrds/";
+//        rrdBasePath = "/opt/opennms/share/rrd/snmp/";
         outPath = "/tmp/tr/out/";
 
 //        File[] nodeIdFolders = new File(rrdBasePath).listFiles();

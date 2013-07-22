@@ -110,16 +110,28 @@ public class Starter {
     
     protected void start(Instant start, Instant end, String rrdBasePath, String nodeId, String rrdName, String thresholdType, Double thresholdValue, Double thresholdRearm, Integer thresholdTrigger, Integer desiredResolution) {
         logger.info("OpenNMS Threshold Replay");
-        
-        File jrbFile = new File(rrdBasePath + "/" + nodeId + "/" + rrdName + RRD_FILE_ENDING);
 
+
+        File initialJrbFile = new File(rrdBasePath + "/" + nodeId + "/" + rrdName + RRD_FILE_ENDING);
+        assert initialJrbFile.canRead();
+
+        //create a thresholdconfiguration for this run
+        //TODO the "TH_Metric-Type-Level" is a bit???
         ThresholdConfiguration thresholdConfiguration = new ThresholdConfiguration("TH_Metirc-Type-Level", rrdName, thresholdType, thresholdValue, thresholdRearm, thresholdTrigger);
 
         JrbTimeSeriesProvider jrbTimeSeriesProvider = new JrbTimeSeriesProvider();
-        jrbTimeSeriesProvider.initRrdMeasurmentOverlay(jrbFile, rrdName, start, end, desiredResolution);
+        jrbTimeSeriesProvider.initRrdMeasurmentOverlay(initialJrbFile, rrdName, start, end, desiredResolution);
         Map<Instant, Double> timeSeriesMap = jrbTimeSeriesProvider.getTimeSeriesMap();
         ThresholdReplay replayThresholdAgainstTimeSeriesDataMap = ThresholdReplayer.replayThresholdAgainstTimeSeriesDataMap(thresholdConfiguration, timeSeriesMap);
-        logger.info(replayThresholdAgainstTimeSeriesDataMap.toFormatedString());
+        logger.info(replayThresholdAgainstTimeSeriesDataMap.toFormattedString());
+        Boolean doOverlayPng = true;
+        if(doOverlayPng) {
+            File overlayGraphPng = OverlayPngHelper.createPng(start, end, initialJrbFile, nodeId, replayThresholdAgainstTimeSeriesDataMap);
+            String[] args = new String[1];
+            args[0] = overlayGraphPng.getAbsolutePath();
+            GraphPngDisplay.main(args);
+        }
+
         logger.info("Thanks for computing with OpenNMS!");
     }
 }
