@@ -72,12 +72,6 @@
             <artifactId>opennms-services</artifactId>
             <version>1.10.8</version>
             <type>jar</type>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-log4j12</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
@@ -105,7 +99,7 @@
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <artifactId>logback-core</artifactId>
             <version>1.0.13</version>
         </dependency>
         <dependency>

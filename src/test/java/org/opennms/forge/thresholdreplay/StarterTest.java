@@ -32,12 +32,29 @@ public class StarterTest {
         //TODO doing it wrong
 //        Instant start = new Instant(new DateTime(2013, 4, 6, 0, 0, 0).getMillis());
 //        Instant end = new Instant(new DateTime(2013, 4, 8, 0, 0, 0).getMillis());
-        Instant start = new Instant(new DateTime(2013, 5, 28, 14, 10, 0).getMillis());
-        Instant end = new Instant(new DateTime(2013, 5, 28, 15, 40, 0).getMillis());
+        Instant start = new Instant(new DateTime(2013, 7, 22, 11, 0, 0).getMillis());
+        Instant end = new Instant(new DateTime(2013, 7, 23, 11, 0, 0).getMillis());
 
 //        starter.start(start, end, "/opt/opennms/share/rrd/snmp/", "1", "SysRawInterrupts", "high", 1000.0, 800.0, 1, 300);
-        starter.start(start, end, "src/test/resources/sampleRRDs", "1", "tcpCurrEstab", "absoluteChange", 10.0, 0.0, 1, 120);
-//        starter.start(start, end, "src/test/resources/sampleRRDs", "1", "tcpCurrEstab", "high", 140.0, 135.0, 1, 120);
+//        starter.start(start, end, "src/test/resources/sampleRRDs", "438", "tcpCurrEstab", "absoluteChange", 10.0, 0.0, 1, 120);
+//        starter.start(start, end, "src/test/resources/sampleRRDs", "441", "tcpCurrEstab", "absoluteChange", 600.0, 0.0, 1, 120);
+//        starter.start(start, end, "src/test/resources/sampleRRDs", "440", "tcpCurrEstab", "absoluteChange", 600.0, 0.0, 1, 120);
+
+        List<String> nodeIds = new ArrayList<String>();
+        nodeIds.add("438");
+        nodeIds.add("439");
+        nodeIds.add("440");
+        nodeIds.add("441");
+
+        for (String nodeId : nodeIds) {
+//            starter.start(start, end, "src/test/resources/sampleRRDs", nodeId, "tcpCurrEstab", "high", 800.0, 750.0, 3, 120);
+//            starter.start(start, end, "src/test/resources/sampleRRDs", nodeId, "tcpCurrEstab", "absoluteChange", 1000.0, 0.0, 2, 120);
+//            starter.start(start, end, "src/test/resources/sampleRRDs", nodeId, "tcpCurrEstab", "relativeChange", 0.3, 0.0, 1, 120);
+        }
+
+        //TODO this case causes a null pointer
+        //starter.start(start, end, "src/test/resources/sampleRRDs", "440666", "tcpCurrEstab", "high", 800.0, 750.0, 1, 120);
+
     }
 
     @Ignore

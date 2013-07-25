@@ -124,6 +124,7 @@ public class Starter {
         Map<Instant, Double> timeSeriesMap = jrbTimeSeriesProvider.getTimeSeriesMap();
         ThresholdReplay replayThresholdAgainstTimeSeriesDataMap = ThresholdReplayer.replayThresholdAgainstTimeSeriesDataMap(thresholdConfiguration, timeSeriesMap);
         logger.info(replayThresholdAgainstTimeSeriesDataMap.toFormattedString());
+        System.out.println("Finally output: " + nodeId +" " + replayThresholdAgainstTimeSeriesDataMap.toFormattedString());
         Boolean doOverlayPng = true;
         if(doOverlayPng) {
             File overlayGraphPng = OverlayPngHelper.createPng(start, end, initialJrbFile, nodeId, replayThresholdAgainstTimeSeriesDataMap);
